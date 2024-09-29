@@ -1,13 +1,3 @@
-const editor = document.getElementById('editor');
-const preview = document.getElementById('preview');
-const pasteButton = document.getElementById('pasteButton');
-const loadButton = document.getElementById('loadButton');
-const fileInput = document.getElementById('fileInput');
-const tabButtons = document.querySelectorAll('.tab-button');
-
-let currentTab = 'html';
-let isPasting = false;
-
 const templates = {
     html: `<!DOCTYPE html>
 <html lang="es">
@@ -73,71 +63,77 @@ function getRandomColor() {
 }`
 };
 
-let code = {
-    html: '',
-    css: '',
-    js: ''
-};
+let editor;
+let currentTab = 'html';
+let code = { html: '', css: '', js: '' };
+let isPasting = false;
 
-function updateEditor() {
-    const highlightedCode = Prism.highlight(code[currentTab], Prism.languages[currentTab], currentTab);
-    editor.innerHTML = highlightedCode;
+const tabButtons = document.querySelectorAll('.tab');
+const pasteButton = document.getElementById('pasteButton');
+const loadButton = document.getElementById('loadButton');
+const fileInput = document.getElementById('fileInput');
+const preview = document.getElementById('preview');
+
+function initEditor() {
+    editor = CodeMirror(document.getElementById('editor'), {
+        mode: 'htmlmixed',
+        theme: 'monokai',
+        lineNumbers: true,
+        autofocus: true
+    });
+
+    editor.on('change', () => {
+        code[currentTab] = editor.getValue();
+        updatePreview();
+    });
+}
+
+function setEditorMode(mode) {
+    editor.setOption('mode', mode);
 }
 
 function updatePreview() {
-    preview.classList.add('updating');
-    const combinedCode = code.html.replace('/* Aquí irá el CSS */', code.css).replace('// Aquí irá el JavaScript', code.js);
-    setTimeout(() => {
-        preview.srcdoc = combinedCode;
-        setTimeout(() => {
-            preview.classList.remove('updating');
-        }, 100);
-    }, 300);
+    const combinedCode = code.html
+        .replace('/* Aquí irá el CSS */', code.css)
+        .replace('// Aquí irá el JavaScript', code.js);
+    preview.srcdoc = combinedCode;
+    preview.classList.add('show');
 }
 
-function simulatePaste(text, duration = 30000) {
-    return new Promise((resolve) => {
-        let i = 0;
-        isPasting = true;
-        pasteButton.disabled = true;
-        pasteButton.textContent = 'Pegando...';
+async function simulatePaste(text, duration = 30000) {
+    isPasting = true;
+    pasteButton.disabled = true;
+    pasteButton.textContent = 'Pegando...';
 
-        const chunkSize = Math.ceil(text.length / (duration / 100)); // Dividir el texto en chunks para pegar en 1.5 minutos
+    const chunkSize = Math.ceil(text.length / (duration / 100));
+    for (let i = 0; i < text.length; i += chunkSize) {
+        const chunk = text.slice(i, i + chunkSize);
+        code[currentTab] += chunk;
+        editor.setValue(code[currentTab]);
+        editor.setCursor(editor.lineCount(), 0);
+        updatePreview();
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
 
-        function paste() {
-            if (i < text.length) {
-                const chunk = text.slice(i, i + chunkSize);
-                code[currentTab] += chunk;
-                updateEditor();
-                i += chunkSize;
-                setTimeout(paste, 100);
-                updatePreview();
-            } else {
-                isPasting = false;
-                pasteButton.disabled = false;
-                pasteButton.textContent = 'Simular pegado';
-                updatePreview();
-                resolve();
-            }
-        }
+    isPasting = false;
+    pasteButton.disabled = false;
+    pasteButton.textContent = 'Simular pegado';
+}
 
-        paste();
+tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        currentTab = button.dataset.tab;
+        setEditorMode(currentTab === 'html' ? 'htmlmixed' : currentTab);
+        editor.setValue(code[currentTab]);
     });
-}
+});
 
 pasteButton.addEventListener('click', () => {
     if (!isPasting) {
         simulatePaste(templates[currentTab]);
     }
-});
-
-tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        currentTab = button.dataset.tab;
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        updateEditor();
-    });
 });
 
 loadButton.addEventListener('click', () => {
@@ -152,17 +148,18 @@ fileInput.addEventListener('change', (event) => {
             const content = e.target.result;
             if (file.name.endsWith('.html')) {
                 code.html = content;
+                if (currentTab === 'html') editor.setValue(content);
             } else if (file.name.endsWith('.css')) {
                 code.css = content;
+                if (currentTab === 'css') editor.setValue(content);
             } else if (file.name.endsWith('.js')) {
                 code.js = content;
+                if (currentTab === 'js') editor.setValue(content);
             }
-            updateEditor();
             updatePreview();
         };
         reader.readAsText(file);
     }
 });
 
-updateEditor();
-updatePreview();
+initEditor();
