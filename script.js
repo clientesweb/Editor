@@ -79,7 +79,23 @@ let code = {
 
 function updatePreview() {
     preview.classList.add('updating');
-    const combinedCode = code.html.replace('/* Aquí irá el CSS */', code.css).replace('// Aquí irá el JavaScript', code.js);
+    
+    const combinedCode = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Vista Previa</title>
+            <style>${code.css}</style>
+        </head>
+        <body>
+            ${code.html}
+            <script>${code.js}</script>
+        </body>
+        </html>
+    `;
+    
     setTimeout(() => {
         preview.srcdoc = combinedCode;
         setTimeout(() => {
@@ -138,4 +154,7 @@ editor.addEventListener('input', () => {
     updatePreview();
 });
 
+// Inicializar el editor con el template HTML
+editor.value = templates.html;
+code.html = templates.html;
 updatePreview();
