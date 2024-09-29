@@ -12,22 +12,33 @@ const templates = {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página Web</title>
-    <style>
-        /* Aquí irá el CSS */
-    </style>
+    <title>Duality Domain - Editor</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Bienvenido a Mi Página Web</h1>
-    </header>
-    <main>
-        <p>Este es un ejemplo de una página web simple.</p>
-        <button id="changeColor">Cambiar color</button>
-    </main>
-    <script>
-        // Aquí irá el JavaScript
-    </script>
+    <div class="container">
+        <header>
+            <h1>Duality Domain - Editor</h1>
+            <img src="https://via.placeholder.com/50" alt="Duality Domain Logo" class="logo">
+        </header>
+        <div class="editor-container">
+            <div class="tabs">
+                <button class="tab-button active" data-tab="html">HTML</button>
+                <button class="tab-button" data-tab="css">CSS</button>
+                <button class="tab-button" data-tab="js">JS</button>
+            </div>
+            <textarea id="editor" class="editor" placeholder="Escribe o pega tu código aquí..."></textarea>
+            <button id="pasteButton" class="paste-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"></path><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"></path><path d="m17 10 4 4-4 4"></path></svg>
+                Simular pegado
+            </button>
+        </div>
+        <div class="preview-container">
+            <h2>Vista Previa</h2>
+            <iframe id="preview" class="preview"></iframe>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>`,
     css: `body {
