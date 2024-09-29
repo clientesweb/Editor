@@ -1,5 +1,12 @@
 :root {
-    --blue: #007bff;
+    --background-editor: #1e1e1e;
+    --text-editor: #d4d4d4;
+    --keyword-color: #569cd6;
+    --comment-color: #6a9955;
+    --string-color: #ce9178;
+    --error-color: #f44747;
+    --background-preview: #ffffff; /* Fondo blanco para la vista previa */
+    --blue: #007bff; /* Puedes mantener este color o modificarlo */
     --black: #000000;
     --white: #ffffff;
 }
@@ -80,7 +87,8 @@ h1 {
     font-size: 14px;
     resize: vertical;
     overflow-y: auto; /* Permite desplazamiento vertical */
-    background-color: #f8f9fa; /* Fondo claro para el editor */
+    background-color: var(--background-editor); /* Color de fondo del editor */
+    color: var(--text-editor); /* Color de texto del editor */
 }
 
 /* Botón de pegado */
@@ -124,10 +132,7 @@ h1 {
     border: 1px solid var(--blue);
     border-radius: 4px;
     transition: opacity 0.5s ease;
-}
-
-.preview.updating {
-    opacity: 0.5;
+    background-color: var(--background-preview); /* Color de fondo de la vista previa */
 }
 
 /* Ajustes para dispositivos móviles */
