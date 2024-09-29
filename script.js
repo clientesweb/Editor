@@ -97,21 +97,20 @@ function simulatePaste(text, delay = 50) {
 
         function paste() {
             if (i < text.length) {
-                // Agregar el carácter al código actual según la pestaña activa
                 code[currentTab] += text[i];
-                editor.value = code[currentTab]; // Actualiza el contenido del editor
-                editor.scrollTop = editor.scrollHeight; // Desplaza el editor hacia abajo
+                editor.value = code[currentTab];
+                editor.scrollTop = editor.scrollHeight;
                 i++;
-
-                // Actualiza la vista previa cada vez que se pega un carácter
-                updatePreview();
-
                 setTimeout(paste, delay);
+                if (i % 10 === 0) {
+                    updatePreview();
+                }
             } else {
                 isPasting = false;
                 pasteButton.disabled = false;
                 pasteButton.textContent = 'Simular pegado';
-                resolve(); // Resuelve la promesa al final del pegado
+                updatePreview();
+                resolve();
             }
         }
 
@@ -121,7 +120,6 @@ function simulatePaste(text, delay = 50) {
 
 pasteButton.addEventListener('click', () => {
     if (!isPasting) {
-        // Inicia la simulación de pegado con la plantilla correspondiente
         simulatePaste(templates[currentTab]);
     }
 });
@@ -140,5 +138,4 @@ editor.addEventListener('input', () => {
     updatePreview();
 });
 
-// Inicializa la vista previa al cargar la página
 updatePreview();
