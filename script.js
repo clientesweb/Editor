@@ -1,14 +1,10 @@
 const editor = document.getElementById('editor');
 const preview = document.getElementById('preview');
 const pasteButton = document.getElementById('pasteButton');
-const loadButton = document.getElementById('loadButton');
-const fileInput = document.getElementById('fileInput');
 const tabButtons = document.querySelectorAll('.tab-button');
-const resetButton = document.getElementById('resetButton'); // Botón de restablecer
 
 let currentTab = 'html';
 let isPasting = false;
-let pasteTimeout;
 
 const templates = {
     html: `<!DOCTYPE html>
@@ -35,44 +31,44 @@ const templates = {
 </body>
 </html>`,
     css: `body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    
-    header {
-        background-color: #007bff;
-        color: white;
-        text-align: center;
-        padding: 1rem;
-    }
-    
-    button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-    }
-    
-    button:hover {
-        background-color: #0056b3;
-    }`,
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}`,
     js: `document.getElementById("changeColor").addEventListener("click", function() {
-        document.body.style.backgroundColor = getRandomColor();
-    });
-    
-    function getRandomColor() {
-        var letters = "0123456789ABCDEF";
-        var color = "#";
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }`
+    document.body.style.backgroundColor = getRandomColor();
+});
+
+function getRandomColor() {
+    var letters = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}`
 };
 
 let code = {
@@ -81,60 +77,52 @@ let code = {
     js: ''
 };
 
-function updateEditor() {
-    const highlightedCode = Prism.highlight(code[currentTab], Prism.languages[currentTab], currentTab);
-    editor.innerHTML = highlightedCode;
-}
-
 function updatePreview() {
     preview.classList.add('updating');
     const combinedCode = code.html.replace('/* Aquí irá el CSS */', code.css).replace('// Aquí irá el JavaScript', code.js);
-    preview.srcdoc = combinedCode;
-    preview.onload = () => preview.classList.remove('updating');
+    setTimeout(() => {
+        preview.srcdoc = combinedCode;
+        setTimeout(() => {
+            preview.classList.remove('updating');
+        }, 100);
+    }, 300);
 }
 
-function simulatePaste(text, duration = 30000) {
-    let i = 0;
-    isPasting = true;
-    pasteButton.disabled = true;
-    pasteButton.textContent = 'Cancel Pegado';
+function simulatePaste(text, delay = 50) {
+    return new Promise((resolve) => {
+        let i = 0;
+        isPasting = true;
+        pasteButton.disabled = true;
+        pasteButton.textContent = 'Pegando...';
 
-    const progressBar = document.createElement('div');
-    progressBar.classList.add('progress-bar');
-    pasteButton.appendChild(progressBar);
+        function paste() {
+            if (i < text.length) {
+                // Agregar el carácter al código actual según la pestaña activa
+                code[currentTab] += text[i];
+                editor.value = code[currentTab]; // Actualiza el contenido del editor
+                editor.scrollTop = editor.scrollHeight; // Desplaza el editor hacia abajo
+                i++;
 
-    const intervalDuration = duration / text.length; // Duración entre caracteres
+                // Actualiza la vista previa cada vez que se pega un carácter
+                updatePreview();
 
-    function paste() {
-        if (i < text.length) {
-            const char = text.charAt(i);
-            code[currentTab] += char; // Añadir carácter
-            updateEditor(); // Actualizar el editor
-            updatePreview(); // Actualizar la vista previa
-            i++;
-            progressBar.style.width = `${(i / text.length) * 100}%`;
-            setTimeout(paste, intervalDuration); // Esperar antes de pegar el siguiente carácter
-        } else {
-            endPaste();
+                setTimeout(paste, delay);
+            } else {
+                isPasting = false;
+                pasteButton.disabled = false;
+                pasteButton.textContent = 'Simular pegado';
+                resolve(); // Resuelve la promesa al final del pegado
+            }
         }
-    }
 
-    pasteButton.addEventListener('click', endPaste);
-    paste();
-
-    function endPaste() {
-        isPasting = false;
-        pasteButton.disabled = false;
-        pasteButton.textContent = 'Simular pegado';
-        pasteButton.removeChild(progressBar);
-        pasteButton.removeEventListener('click', endPaste);
-    }
+        paste();
+    });
 }
 
 pasteButton.addEventListener('click', () => {
     if (!isPasting) {
-        const contentToPaste = code[currentTab];
-        simulatePaste(contentToPaste);
+        // Inicia la simulación de pegado con la plantilla correspondiente
+        simulatePaste(templates[currentTab]);
     }
 });
 
@@ -143,43 +131,14 @@ tabButtons.forEach(button => {
         currentTab = button.dataset.tab;
         tabButtons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
-        updateEditor();
+        editor.value = code[currentTab];
     });
 });
 
-loadButton.addEventListener('click', () => {
-    fileInput.click();
-});
-
-fileInput.addEventListener('change', (event) => {
-    const files = event.target.files;
-    Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target.result;
-            if (file.name.endsWith('.html')) {
-                simulatePaste(content, 30000); // Simula el pegado del archivo HTML
-                code.html = ''; // Limpiar código HTML si se está pegando desde un archivo
-            } else if (file.name.endsWith('.css')) {
-                simulatePaste(content, 30000); // Simula el pegado del archivo CSS
-                code.css = ''; // Limpiar código CSS si se está pegando desde un archivo
-            } else if (file.name.endsWith('.js')) {
-                simulatePaste(content, 30000); // Simula el pegado del archivo JS
-                code.js = ''; // Limpiar código JS si se está pegando desde un archivo
-            } else {
-                alert('Solo se permiten archivos HTML, CSS o JS.');
-            }
-        };
-        reader.readAsText(file);
-    });
-});
-
-// Botón de restablecer
-resetButton.addEventListener('click', () => {
-    code = { html: templates.html, css: templates.css, js: templates.js };
-    updateEditor();
+editor.addEventListener('input', () => {
+    code[currentTab] = editor.value;
     updatePreview();
 });
 
-updateEditor();
+// Inicializa la vista previa al cargar la página
 updatePreview();
