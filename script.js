@@ -14,6 +14,7 @@ const pasteButton = document.getElementById('pasteButton');
 const loadButton = document.getElementById('loadButton');
 const fileInput = document.getElementById('fileInput');
 const preview = document.getElementById('preview');
+const reloadPreviewButton = document.getElementById('reloadPreview');
 
 function initEditor() {
     editor = CodeMirror(document.getElementById('editor'), {
@@ -34,11 +35,20 @@ function setEditorMode(mode) {
 }
 
 function updatePreview() {
-    const combinedCode = code.html
-        .replace('/* Aquí irá el CSS */', code.css)
-        .replace('// Aquí irá el JavaScript', code.js);
-    preview.srcdoc = combinedCode;
-    preview.classList.add('show');
+    const combinedCode = `
+        <html>
+            <head>
+                <style>${code.css}</style>
+            </head>
+            <body>
+                ${code.html}
+                <script>${code.js}<\/script>
+            </body>
+        </html>
+    `;
+    
+    const blob = new Blob([combinedCode], { type: 'text/html' });
+    preview.src = URL.createObjectURL(blob);
 }
 
 async function fetchTemplate(url) {
@@ -62,7 +72,6 @@ async function simulatePaste(templateUrl, duration = 30000) {
     const text = await fetchTemplate(templateUrl);
     const chunkSize = Math.ceil(text.length / (duration / 100));
     
-    // Limpiar el código actual antes de comenzar a pegar
     code[currentTab] = '';
     editor.setValue('');
     
@@ -120,6 +129,14 @@ fileInput.addEventListener('change', (event) => {
         };
         reader.readAsText(file);
     }
+});
+
+reloadPreviewButton.addEventListener('click', () => {
+    updatePreview();
+});
+
+preview.addEventListener('load', () => {
+    preview.style.opacity = '1';
 });
 
 initEditor();
