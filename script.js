@@ -32,38 +32,30 @@ async function loadTemplate(tab) {
 }
 
 function updatePreview() {
-    // Añadir clase de transición suave y efecto de opacidad
-    preview.style.transition = 'opacity 0.6s ease';
-    preview.style.opacity = 0; // Desaparece antes de la actualización
+    const combinedCode = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                ${code.css}
+            </style>
+        </head>
+        <body>
+            ${code.html}
+            <script>
+                ${code.js}
+            <\/script>
+        </body>
+        </html>
+    `;
 
-    // Después de un pequeño retardo, actualiza la vista previa
-    setTimeout(() => {
-        const combinedCode = `
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <style>
-                    ${code.css}
-                </style>
-            </head>
-            <body>
-                ${code.html}
-                <script>
-                    ${code.js}
-                <\/script>
-            </body>
-            </html>
-        `;
-
-        preview.srcdoc = combinedCode;
-
-        // Vuelve a hacer visible el iframe suavemente después de cargar
-        preview.onload = () => {
-            preview.style.opacity = 1; // Reaparece suavemente
-        };
-    }, 200); // Tiempo de retardo antes de actualizar la vista previa
+    // Actualizar la vista previa sin titileo
+    const currentPreview = preview.srcdoc;
+    if (currentPreview !== combinedCode) {
+        preview.srcdoc = combinedCode;  // Solo actualiza si el contenido ha cambiado
+    }
 }
 
 // Función para simular el pegado de código de archivos externos
@@ -83,6 +75,7 @@ function simulatePaste(text, delay = 5) {
             if (i < text.length) {
                 code[currentTab] += text[i];
                 editor.value = code[currentTab];  // Actualiza el valor del editor
+                editor.scrollTop = editor.scrollHeight;  // Mantiene el scroll al final
                 i++;
                 setTimeout(paste, delay);
                 if (i % 10 === 0) {
