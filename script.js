@@ -78,8 +78,6 @@ let code = {
 };
 
 function updatePreview() {
-    preview.classList.add('updating');
-    
     const combinedCode = `
         <!DOCTYPE html>
         <html lang="es">
@@ -95,13 +93,7 @@ function updatePreview() {
         </body>
         </html>
     `;
-    
-    setTimeout(() => {
-        preview.srcdoc = combinedCode;
-        setTimeout(() => {
-            preview.classList.remove('updating');
-        }, 100);
-    }, 300);
+    preview.srcdoc = combinedCode;  // Actualiza el contenido de la vista previa
 }
 
 function simulatePaste(text, delay = 50) {
@@ -114,18 +106,18 @@ function simulatePaste(text, delay = 50) {
         function paste() {
             if (i < text.length) {
                 code[currentTab] += text[i];
-                editor.value = code[currentTab];
-                editor.scrollTop = editor.scrollHeight;
+                editor.value = code[currentTab];  // Actualiza el valor del editor
+                editor.scrollTop = editor.scrollHeight;  // Mantiene el scroll al final
                 i++;
                 setTimeout(paste, delay);
                 if (i % 10 === 0) {
-                    updatePreview();
+                    updatePreview();  // Actualiza la vista previa cada 10 caracteres
                 }
             } else {
                 isPasting = false;
                 pasteButton.disabled = false;
                 pasteButton.textContent = 'Simular pegado';
-                updatePreview();
+                updatePreview();  // Actualiza la vista previa al final
                 resolve();
             }
         }
@@ -145,16 +137,12 @@ tabButtons.forEach(button => {
         currentTab = button.dataset.tab;
         tabButtons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
-        editor.value = code[currentTab];
+        editor.value = code[currentTab];  // Actualiza el editor al cambiar de pestaña
+        updatePreview();  // Actualiza la vista previa al cambiar de pestaña
     });
 });
 
 editor.addEventListener('input', () => {
-    code[currentTab] = editor.value;
-    updatePreview();
+    code[currentTab] = editor.value;  // Actualiza el código según lo que se escribe
+    updatePreview();  // Actualiza la vista previa
 });
-
-// Inicializar el editor con el template HTML
-editor.value = templates.html;
-code.html = templates.html;
-updatePreview();
