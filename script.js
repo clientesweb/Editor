@@ -59,7 +59,7 @@ function updatePreview() {
 }
 
 // Función para simular el pegado de código de archivos externos
-async function simulatePasteFromFile(tab, delay = 5) {
+async function simulatePasteFromFile(tab, delay = 10) {
     const templateContent = await loadTemplate(tab); // Carga el contenido del archivo externo
     return simulatePaste(templateContent, delay);
 }
