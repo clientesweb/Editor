@@ -6,7 +6,7 @@
     <title>Duality Domain - Editor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/theme/monokai.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -30,6 +30,9 @@
             </div>
             <div class="preview-container">
                 <h2>Vista Previa</h2>
+                <div class="preview-controls">
+                    <button id="reloadPreview">Recargar Vista Previa</button>
+                </div>
                 <div class="phone-frame">
                     <iframe id="preview"></iframe>
                 </div>
