@@ -9,7 +9,6 @@ const resetButton = document.getElementById('resetButton'); // Botón de restabl
 let currentTab = 'html';
 let isPasting = false;
 let pasteTimeout;
-let editorUpdateTimeout;
 
 const templates = {
     html: `<!DOCTYPE html>
@@ -83,11 +82,8 @@ let code = {
 };
 
 function updateEditor() {
-    clearTimeout(editorUpdateTimeout);
-    editorUpdateTimeout = setTimeout(() => {
-        const highlightedCode = Prism.highlight(code[currentTab], Prism.languages[currentTab], currentTab);
-        editor.innerHTML = highlightedCode;
-    }, 300);
+    const highlightedCode = Prism.highlight(code[currentTab], Prism.languages[currentTab], currentTab);
+    editor.innerHTML = highlightedCode;
 }
 
 function updatePreview() {
@@ -97,26 +93,27 @@ function updatePreview() {
     preview.onload = () => preview.classList.remove('updating');
 }
 
-function simulatePaste(text, duration = 30000) { // Cambiado a 30 segundos
+function simulatePaste(text, duration = 30000) {
     let i = 0;
     isPasting = true;
     pasteButton.disabled = true;
     pasteButton.textContent = 'Cancel Pegado';
-    
-    const chunkSize = Math.ceil(text.length / (duration / 100));
+
     const progressBar = document.createElement('div');
     progressBar.classList.add('progress-bar');
     pasteButton.appendChild(progressBar);
 
+    const intervalDuration = duration / text.length; // Duración entre caracteres
+
     function paste() {
         if (i < text.length) {
-            const chunk = text.slice(i, i + chunkSize);
-            code[currentTab] += chunk;
-            updateEditor();
-            i += chunkSize;
+            const char = text.charAt(i);
+            code[currentTab] += char; // Añadir carácter
+            updateEditor(); // Actualizar el editor
+            updatePreview(); // Actualizar la vista previa
+            i++;
             progressBar.style.width = `${(i / text.length) * 100}%`;
-            pasteTimeout = setTimeout(paste, 100);
-            updatePreview();
+            setTimeout(paste, intervalDuration); // Esperar antes de pegar el siguiente carácter
         } else {
             endPaste();
         }
@@ -126,19 +123,18 @@ function simulatePaste(text, duration = 30000) { // Cambiado a 30 segundos
     paste();
 
     function endPaste() {
-        clearTimeout(pasteTimeout);
         isPasting = false;
         pasteButton.disabled = false;
         pasteButton.textContent = 'Simular pegado';
         pasteButton.removeChild(progressBar);
         pasteButton.removeEventListener('click', endPaste);
-        updatePreview();
     }
 }
 
 pasteButton.addEventListener('click', () => {
     if (!isPasting) {
-        simulatePaste(templates[currentTab]);
+        const contentToPaste = code[currentTab];
+        simulatePaste(contentToPaste);
     }
 });
 
@@ -158,20 +154,23 @@ loadButton.addEventListener('click', () => {
 fileInput.addEventListener('change', (event) => {
     const files = event.target.files;
     Array.from(files).forEach(file => {
-        if (['.html', '.css', '.js'].some(ext => file.name.endsWith(ext))) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const content = e.target.result;
-                if (file.name.endsWith('.html')) code.html = content;
-                if (file.name.endsWith('.css')) code.css = content;
-                if (file.name.endsWith('.js')) code.js = content;
-                updateEditor();
-                updatePreview();
-            };
-            reader.readAsText(file);
-        } else {
-            alert('Solo se permiten archivos HTML, CSS o JS.');
-        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target.result;
+            if (file.name.endsWith('.html')) {
+                simulatePaste(content, 30000); // Simula el pegado del archivo HTML
+                code.html = ''; // Limpiar código HTML si se está pegando desde un archivo
+            } else if (file.name.endsWith('.css')) {
+                simulatePaste(content, 30000); // Simula el pegado del archivo CSS
+                code.css = ''; // Limpiar código CSS si se está pegando desde un archivo
+            } else if (file.name.endsWith('.js')) {
+                simulatePaste(content, 30000); // Simula el pegado del archivo JS
+                code.js = ''; // Limpiar código JS si se está pegando desde un archivo
+            } else {
+                alert('Solo se permiten archivos HTML, CSS o JS.');
+            }
+        };
+        reader.readAsText(file);
     });
 });
 
