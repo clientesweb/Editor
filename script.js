@@ -1,66 +1,7 @@
 const templates = {
-    html: `<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página Web</title>
-    <style>
-        /* Aquí irá el CSS */
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Bienvenido a Mi Página Web</h1>
-    </header>
-    <main>
-        <p>Este es un ejemplo de una página web simple.</p>
-        <button id="changeColor">Cambiar color</button>
-    </main>
-    <script>
-        // Aquí irá el JavaScript
-    </script>
-</body>
-</html>`,
-    css: `body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-header {
-    background-color: #007bff;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-}
-
-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #0056b3;
-}`,
-    js: `document.getElementById("changeColor").addEventListener("click", function() {
-    document.body.style.backgroundColor = getRandomColor();
-});
-
-function getRandomColor() {
-    var letters = "0123456789ABCDEF";
-    var color = "#";
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}`
+    html: 'template.html',
+    css: 'template.css',
+    js: 'template.js'
 };
 
 let editor;
@@ -100,11 +41,25 @@ function updatePreview() {
     preview.classList.add('show');
 }
 
-async function simulatePaste(text, duration = 30000) {
+async function fetchTemplate(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.text();
+    } catch (error) {
+        console.error('Error fetching template:', error);
+        return '';
+    }
+}
+
+async function simulatePaste(templateUrl, duration = 30000) {
     isPasting = true;
     pasteButton.disabled = true;
     pasteButton.textContent = 'Pegando...';
 
+    const text = await fetchTemplate(templateUrl);
     const chunkSize = Math.ceil(text.length / (duration / 100));
     for (let i = 0; i < text.length; i += chunkSize) {
         const chunk = text.slice(i, i + chunkSize);
