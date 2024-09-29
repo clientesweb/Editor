@@ -237,16 +237,26 @@ function updatePreview() {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Vista Previa</title>
-            <style>${code.css}</style>
         </head>
         <body>
             ${code.html}
-            <script>${code.js}</script>
+            <style>
+                ${code.css}
+            </style>
+            <script>
+                ${code.js}
+            <\/script>
         </body>
         </html>
     `;
-    preview.srcdoc = combinedCode;  // Actualiza el contenido de la vista previa
+    
+    // Actualiza el contenido de la vista previa
+    preview.srcdoc = combinedCode;
+
+    // Espera a que se cargue el contenido y desplaza hacia abajo
+    preview.onload = function() {
+        preview.contentWindow.scrollTo(0, preview.contentWindow.document.body.scrollHeight);
+    };
 }
 
 function simulatePaste(text, delay = 15) {
