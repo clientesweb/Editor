@@ -12,22 +12,31 @@ const templates = {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página Web</title>
-    <style>
-        /* Aquí irá el CSS */
-    </style>
+    <title>Login - Vendedor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/login-styles.css"> <!-- Asegúrate de usar el CSS actualizado -->
 </head>
 <body>
-    <header>
-        <h1>Bienvenido a Mi Página Web</h1>
-    </header>
-    <main>
-        <p>Este es un ejemplo de una página web simple.</p>
-        <button id="changeColor">Cambiar color</button>
-    </main>
-    <script>
-        // Aquí irá el JavaScript
-    </script>
+    <div class="login-container">
+        <header>
+            <img src="logo (9).png" alt="Logo" class="logo">
+            <h1>Vendedor</h1>
+        </header>
+        <div class="login-form">
+            <h2>Iniciar Sesión</h2>
+            <label for="usuario"><i class="fa-solid fa-user"></i> Usuario:</label>
+            <input type="text" id="usuario" placeholder="Usuario" required aria-label="Usuario">
+            <label for="contrasena"><i class="fa-solid fa-lock"></i> Contraseña:</label>
+            <input type="password" id="contrasena" placeholder="Contraseña" required aria-label="Contraseña">
+            <button id="iniciar-sesion">Login</button>
+            <p id="mensaje-error" class="error-message"></p>
+            <p><a href="#">¿Olvidaste tu contraseña?</a></p>
+        </div>
+    </div>
+    <footer>
+        <p>Powered by Duality Domain</p>
+    </footer>
+    <script src="js/login.js"></script>
 </body>
 </html>`,
     css: `body {
@@ -88,7 +97,7 @@ function updatePreview() {
     }, 300);
 }
 
-function simulatePaste(text, delay = 50) {
+function simulatePaste(text, delay = 20) {
     return new Promise((resolve) => {
         let i = 0;
         isPasting = true;
