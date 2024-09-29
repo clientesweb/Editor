@@ -61,6 +61,11 @@ async function simulatePaste(templateUrl, duration = 30000) {
 
     const text = await fetchTemplate(templateUrl);
     const chunkSize = Math.ceil(text.length / (duration / 100));
+    
+    // Limpiar el código actual antes de comenzar a pegar
+    code[currentTab] = '';
+    editor.setValue('');
+    
     for (let i = 0; i < text.length; i += chunkSize) {
         const chunk = text.slice(i, i + chunkSize);
         code[currentTab] += chunk;
