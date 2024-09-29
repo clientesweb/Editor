@@ -2,14 +2,16 @@
     --blue: #007bff;
     --black: #000000;
     --white: #ffffff;
+    --vs-code-bg: #1e1e1e;
 }
 
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: var(--white);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     color: var(--black);
+    min-height: 100vh;
 }
 
 .container {
@@ -17,7 +19,7 @@ body {
     margin: 0 auto;
     background-color: var(--white);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
 
@@ -26,7 +28,7 @@ header {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: var(--blue);
+    background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
     color: var(--white);
 }
 
@@ -61,6 +63,7 @@ h1 {
     cursor: pointer;
     font-size: 16px;
     color: var(--black);
+    transition: all 0.3s ease;
 }
 
 .tab-button.active {
@@ -74,19 +77,25 @@ h1 {
     height: 300px;
     border: 1px solid var(--blue);
     border-radius: 4px;
-    padding: 10px;
-    font-family: monospace;
+    background-color: var(--vs-code-bg);
+    color: var(--white);
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
     font-size: 14px;
-    resize: vertical;
+    line-height: 1.5;
+    overflow: auto;
 }
 
-.paste-button {
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.paste-button, .load-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
     padding: 10px;
-    margin-top: 10px;
     background-color: var(--blue);
     color: var(--white);
     border: none;
@@ -96,11 +105,11 @@ h1 {
     transition: background-color 0.3s ease;
 }
 
-.paste-button:hover {
+.paste-button:hover, .load-button:hover {
     background-color: #0056b3;
 }
 
-.paste-button:disabled {
+.paste-button:disabled, .load-button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }
@@ -115,7 +124,7 @@ h1 {
 
 .preview {
     width: 100%;
-    height: 500px;
+    height: 600px;
     border: 1px solid var(--blue);
     border-radius: 4px;
     transition: opacity 0.5s ease;
@@ -123,6 +132,10 @@ h1 {
 
 .preview.updating {
     opacity: 0.5;
+}
+
+#fileInput {
+    display: none;
 }
 
 @media (max-width: 768px) {
@@ -139,6 +152,6 @@ h1 {
     }
 
     .preview {
-        height: 300px;
+        height: 400px;
     }
 }
