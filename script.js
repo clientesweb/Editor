@@ -95,7 +95,7 @@ function updatePreview() {
     }, 300);
 }
 
-function simulatePaste(text, duration = 90000) {
+function simulatePaste(text, duration = 50) {
     return new Promise((resolve) => {
         let i = 0;
         isPasting = true;
