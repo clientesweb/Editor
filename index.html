@@ -5,16 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duality Domain - Editor</title>
     <link rel="stylesheet" href="style.css">
-
-    <!-- CodeMirror CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/theme/material.min.css">
-
-    <!-- CodeMirror JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/xml/xml.min.js"></script> <!-- Para HTML -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/css/css.min.js"></script> <!-- Para CSS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/javascript/javascript.min.js"></script> <!-- Para JS -->
 </head>
 <body>
     <div class="container">
@@ -28,8 +18,7 @@
                 <button class="tab-button" data-tab="css">CSS</button>
                 <button class="tab-button" data-tab="js">JS</button>
             </div>
-            <!-- Cambiado el textarea por un div para CodeMirror -->
-            <div id="editor" class="editor"></div>
+            <textarea id="editor" class="editor" placeholder="Escribe o pega tu código aquí..."></textarea>
             <button id="pasteButton" class="paste-button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"></path><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"></path><path d="m17 10 4 4-4 4"></path></svg>
                 Simular pegado
@@ -40,36 +29,6 @@
             <iframe id="preview" class="preview"></iframe>
         </div>
     </div>
-
     <script src="script.js"></script>
-    <script>
-        // Inicializar CodeMirror
-        var editor = CodeMirror(document.getElementById('editor'), {
-            lineNumbers: true,
-            mode: "htmlmixed", // Cambiar entre 'htmlmixed', 'css', 'javascript' según el tab activo
-            theme: "material", // Cambiar el tema si lo deseas
-            tabSize: 2,
-            lineWrapping: true,
-            value: '<!-- Escribe tu código aquí -->\n', // Texto por defecto
-        });
-
-        // Cambiar el modo según el tab seleccionado
-        document.querySelectorAll('.tab-button').forEach((button) => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-
-                const mode = button.getAttribute('data-tab');
-                editor.setOption('mode', mode === 'html' ? 'htmlmixed' : mode);
-            });
-        });
-
-        // Simulación de pegado
-        document.getElementById('pasteButton').addEventListener('click', () => {
-            // Lógica para simular el pegado
-            // Puedes implementar la lógica que desees aquí
-            console.log('Simular pegado');
-        });
-    </script>
 </body>
 </html>
