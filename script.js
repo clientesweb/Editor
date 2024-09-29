@@ -1,6 +1,8 @@
 const editor = document.getElementById('editor');
 const preview = document.getElementById('preview');
 const pasteButton = document.getElementById('pasteButton');
+const loadButton = document.getElementById('loadButton');
+const fileInput = document.getElementById('fileInput');
 const tabButtons = document.querySelectorAll('.tab-button');
 
 let currentTab = 'html';
@@ -12,31 +14,22 @@ const templates = {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Vendedor</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="css/login-styles.css"> <!-- Asegúrate de usar el CSS actualizado -->
+    <title>Mi Página Web</title>
+    <style>
+        /* Aquí irá el CSS */
+    </style>
 </head>
 <body>
-    <div class="login-container">
-        <header>
-            <img src="logo (9).png" alt="Logo" class="logo">
-            <h1>Vendedor</h1>
-        </header>
-        <div class="login-form">
-            <h2>Iniciar Sesión</h2>
-            <label for="usuario"><i class="fa-solid fa-user"></i> Usuario:</label>
-            <input type="text" id="usuario" placeholder="Usuario" required aria-label="Usuario">
-            <label for="contrasena"><i class="fa-solid fa-lock"></i> Contraseña:</label>
-            <input type="password" id="contrasena" placeholder="Contraseña" required aria-label="Contraseña">
-            <button id="iniciar-sesion">Login</button>
-            <p id="mensaje-error" class="error-message"></p>
-            <p><a href="#">¿Olvidaste tu contraseña?</a></p>
-        </div>
-    </div>
-    <footer>
-        <p>Powered by Duality Domain</p>
-    </footer>
-    <script src="js/login.js"></script>
+    <header>
+        <h1>Bienvenido a Mi Página Web</h1>
+    </header>
+    <main>
+        <p>Este es un ejemplo de una página web simple.</p>
+        <button id="changeColor">Cambiar color</button>
+    </main>
+    <script>
+        // Aquí irá el JavaScript
+    </script>
 </body>
 </html>`,
     css: `body {
@@ -86,6 +79,11 @@ let code = {
     js: ''
 };
 
+function updateEditor() {
+    const highlightedCode = Prism.highlight(code[currentTab], Prism.languages[currentTab], currentTab);
+    editor.innerHTML = highlightedCode;
+}
+
 function updatePreview() {
     preview.classList.add('updating');
     const combinedCode = code.html.replace('/* Aquí irá el CSS */', code.css).replace('// Aquí irá el JavaScript', code.js);
@@ -97,23 +95,23 @@ function updatePreview() {
     }, 300);
 }
 
-function simulatePaste(text, delay = 20) {
+function simulatePaste(text, duration = 90000) {
     return new Promise((resolve) => {
         let i = 0;
         isPasting = true;
         pasteButton.disabled = true;
         pasteButton.textContent = 'Pegando...';
 
+        const chunkSize = Math.ceil(text.length / (duration / 100)); // Dividir el texto en chunks para pegar en 1.5 minutos
+
         function paste() {
             if (i < text.length) {
-                code[currentTab] += text[i];
-                editor.value = code[currentTab];
-                editor.scrollTop = editor.scrollHeight;
-                i++;
-                setTimeout(paste, delay);
-                if (i % 10 === 0) {
-                    updatePreview();
-                }
+                const chunk = text.slice(i, i + chunkSize);
+                code[currentTab] += chunk;
+                updateEditor();
+                i += chunkSize;
+                setTimeout(paste, 100);
+                updatePreview();
             } else {
                 isPasting = false;
                 pasteButton.disabled = false;
@@ -138,13 +136,33 @@ tabButtons.forEach(button => {
         currentTab = button.dataset.tab;
         tabButtons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
-        editor.value = code[currentTab];
+        updateEditor();
     });
 });
 
-editor.addEventListener('input', () => {
-    code[currentTab] = editor.value;
-    updatePreview();
+loadButton.addEventListener('click', () => {
+    fileInput.click();
 });
 
+fileInput.addEventListener('change', (event) => {
+    const files = event.target.files;
+    for (let file of files) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target.result;
+            if (file.name.endsWith('.html')) {
+                code.html = content;
+            } else if (file.name.endsWith('.css')) {
+                code.css = content;
+            } else if (file.name.endsWith('.js')) {
+                code.js = content;
+            }
+            updateEditor();
+            updatePreview();
+        };
+        reader.readAsText(file);
+    }
+});
+
+updateEditor();
 updatePreview();
