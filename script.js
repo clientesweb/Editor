@@ -96,7 +96,7 @@ function updatePreview() {
     preview.srcdoc = combinedCode;  // Actualiza el contenido de la vista previa
 }
 
-function simulatePaste(text, delay = 50) {
+function simulatePaste(text, delay = 25) {
     return new Promise((resolve) => {
         let i = 0;
         isPasting = true;
