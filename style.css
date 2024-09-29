@@ -123,34 +123,23 @@ h1 {
 
 .preview-container {
     position: relative;
+    transition: all 0.8s ease; /* Suaviza todas las propiedades en 0.8 segundos */
 }
 
-/* Estilos para la vista previa */
+/* Si estás cambiando la opacidad o el tamaño del contenedor de la vista previa, aplica la transición aquí */
 .preview {
     width: 100%;
-    height: 1280px; /* Aumentar la altura para que sea más grande */
+    height: 1280px;
     border: 1px solid var(--blue);
     border-radius: 4px;
-    transition: opacity 0.5s ease;
+    transition: all 0.8s ease; /* Suaviza cambios en todas las propiedades */
     background-color: var(--background-preview);
-    overflow-y: auto; /* Permite el desplazamiento vertical */
+    overflow-y: auto;
+    opacity: 1; /* Asegúrate de que tenga un valor de opacidad inicial */
 }
 
-/* Ajustes para dispositivos móviles */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-
-    .container {
-        border-radius: 0;
-    }
-
-    .editor {
-        height: 200px; /* Altura menor para pantallas pequeñas */
-    }
-
-    .preview {
-        height: 300px; /* Altura menor para pantallas pequeñas */
-    }
+/* Ejemplo: Si quisieras hacer que la opacidad cambie al interactuar con la vista previa */
+.preview.hidden {
+    opacity: 0; /* Aplica la transición al ocultar */
+    transform: scale(0.95); /* Escala ligeramente para un efecto más dinámico */
 }
